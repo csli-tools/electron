@@ -2,19 +2,33 @@ import type { NextPage } from 'next'
 import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import {
+  ReceiptPercentIcon,
+  CodeBracketIcon,
+} from '@heroicons/react/24/outline'
 
 import styles from '../styles/Home.module.css'
 import Dashboard from '../components/Dashboard'
 import Contracts from '../components/Contracts'
 import Wasm from '../services/Wasm'
+import Logo from '../components/svg/Logo.svg'
 
 enum Tab {
   Transactions,
   Contracts
 }
 
+const navigation = [
+  { tab:Tab.Transactions, name: 'Dashboard', href: '#', icon: ReceiptPercentIcon },
+  { tab:Tab.Contracts, name: 'Contracts', href: '#', icon: CodeBracketIcon },
+]
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
+}
+
 const Home: NextPage = () => {
-  const [tab, setTab] = useState<Tab>(Tab.Transactions)
+  const [tab, setTab] = useState(Tab.Transactions)
   const [client, setClient] = useState<CosmWasmClient | undefined>() // this component will validate our cosmwasmclient and block any rendering if it doesn't connect, all other components can simply assume that it exists and is connected
   const [connectionAttempted, setConnectionAttempted] = useState(false)
     
@@ -38,17 +52,45 @@ const Home: NextPage = () => {
 
       
       {client &&
-        <React.Fragment>
-          <button className={`rounded-full ${tab === Tab.Transactions ? "bg-sky-500" : "bg-sky-300"} p-2 m-4`} onClick={() => setTab(Tab.Transactions)}>Dashboard</button>
-          <button className={`rounded-full ${tab === Tab.Contracts ? "bg-sky-500" : "bg-sky-300"} p-2 m-4`} onClick={() => setTab(Tab.Contracts)}>Contracts</button>
-          {tab === Tab.Transactions &&
-            <Dashboard />
-          }
-          {
-            tab === Tab.Contracts &&
-            <Contracts />
-          }
-        </React.Fragment>
+        <div>
+          <div className="flex w-64 flex-col fixed inset-y-0">
+            {/* Sidebar component, swap this element with another sidebar if you like */}
+            <div className="flex flex-col flex-grow pt-5 bg-seafoam-500 overflow-y-auto">
+              <div className="flex items-center flex-shrink-0 px-4 text-white space-x-2">
+                <Logo className="h-8 w-auto" />
+                <span>CSLI</span>
+              </div>
+              <div className="mt-5 flex-1 flex flex-col">
+                <nav className="flex-1 px-2 pb-4 space-y-1">
+                  {navigation.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setTab(item.tab)}
+                      className={classNames(
+                        tab === item.tab ? 'bg-seafoam-900 text-white' : 'text-seafoam-100 hover:bg-seafoam-700',
+                        'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                      )}
+                    >
+                      <item.icon className="mr-3 flex-shrink-0 h-6 w-6 text-seafoam-300" aria-hidden="true" />
+                      {item.name}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div className="pl-64 flex flex-col flex-1">
+            <main>
+              {tab === Tab.Transactions &&
+                <Dashboard />
+              }
+              {tab === Tab.Contracts &&
+                <Contracts />
+              }
+            </main>
+          </div>
+        </div>
       }
       {!client && connectionAttempted &&
         <div>
@@ -60,3 +102,4 @@ const Home: NextPage = () => {
 }
 
 export default Home
+
