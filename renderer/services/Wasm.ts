@@ -3,25 +3,25 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate"
 
 export default class Wasm {
   private static instance: Wasm
-  rpcEndpoint: string = `${process.env.RPC_PROTOCOL ?? 'http'}://${process.env.RPC_URL ?? 'localhost:3000/wasm'}`
-  
+  rpcEndpoint: string = `${process.env.RPC_PROTOCOL ?? 'http'}://${process.env.RPC_URL ?? 'localhost:8888/wasm'}`
+
   client: CosmWasmClient | undefined
   private constructor() {
     this.client = undefined
   }
-  
-  
+
+
   static sharedInstance() {
     if (!Wasm.instance) {
       Wasm.instance = new Wasm()
     }
     return Wasm.instance
   }
-  
+
   async connect() {
     try {
-      
-      this.client = await CosmWasmClient.connect(this.rpcEndpoint)  
+
+      this.client = await CosmWasmClient.connect(this.rpcEndpoint)
       return this.client
     } catch (error: any) {
       if (error && error.code) {

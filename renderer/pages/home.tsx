@@ -31,7 +31,7 @@ const Home: NextPage = () => {
   const [tab, setTab] = useState(Tab.Transactions)
   const [client, setClient] = useState<CosmWasmClient | undefined>() // this component will validate our cosmwasmclient and block any rendering if it doesn't connect, all other components can simply assume that it exists and is connected
   const [connectionAttempted, setConnectionAttempted] = useState(false)
-    
+
   useEffect(() => {
     Wasm.sharedInstance().connect().then(client => {
       setClient(client)
@@ -41,7 +41,7 @@ const Home: NextPage = () => {
       setConnectionAttempted(true)
     })
   }, [])
-  
+
   return (
     <div className={styles.container}>
       <Head>
@@ -50,7 +50,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      
+
       {client &&
         <div>
           <div className="flex w-64 flex-col fixed inset-y-0">
@@ -102,4 +102,3 @@ const Home: NextPage = () => {
 }
 
 export default Home
-
