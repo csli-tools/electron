@@ -3,8 +3,15 @@ import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolki
 
 export interface Contract {
   id: number
-  knownAddresses: string[]
+  instances: ContractInstance[]
   nickname?: string
+}
+export interface ContractInstance {
+  address: string
+  admin?: string
+  label: string
+  creator: string
+  ibcPortId?: string
 }
 
 const contractEntity = createEntityAdapter<Contract>()

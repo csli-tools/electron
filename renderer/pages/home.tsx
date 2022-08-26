@@ -52,7 +52,7 @@ const Home: NextPage = () => {
 
 
       {client &&
-        <div>
+        <div className="min-h-screen">
           <div className="flex w-64 flex-col fixed inset-y-0">
             {/* Sidebar component, swap this element with another sidebar if you like */}
             <div className="flex flex-col flex-grow pt-5 bg-seafoam-500 overflow-y-auto">
