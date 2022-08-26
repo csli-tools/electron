@@ -6,7 +6,7 @@ import { toHex, toBase64 } from '@cosmjs/encoding'
 import { sha256 } from '@cosmjs/crypto'
 import { decodeTxRaw, DecodedTxRaw, decodePubkey } from '@cosmjs/proto-signing'
 
-import { store } from '../store'
+import { getStore } from '../store'
 import { Block, blockActions } from '../store/blocks'
 import { DecodedTransaction, transactionActions } from '../store/transactions'
 
@@ -50,8 +50,7 @@ export default class TransactionHelper {
         transactions: [...latestBlockDetails.txs],
         transactionHashes: latestBlockDetails.txs.map(tx => toHex(sha256(tx)))
       }
-
-      store.dispatch(blockActions.upsert(block))
+      getStore().dispatch(blockActions.upsert(block))
     } catch (error) {
       console.log('failed to check for new block', error)
     }
@@ -109,7 +108,7 @@ export default class TransactionHelper {
     const transaction = await this.fetchTransaction(hash)
 
     if (transaction) {
-      store.dispatch(transactionActions.upsert(transaction))
+      getStore().dispatch(transactionActions.upsert(transaction))
     }
   }
 }

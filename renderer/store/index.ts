@@ -29,7 +29,9 @@ const makeStore = wrapMakeStore(() => {
 export type AppStore = ReturnType<typeof makeStore>
 export type AppState = ReturnType<AppStore['getState']>
 
-export const store: AppStore = tempStore
+export const getStore = (): AppStore => {
+  return tempStore
+}
 
 export type AppDispatch = AppStore["dispatch"];
 export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
