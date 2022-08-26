@@ -7,6 +7,8 @@ import {
   CodeBracketIcon,
 } from '@heroicons/react/24/outline'
 
+import TransactionHelper from '../services/TransactionHelper'
+
 import styles from '../styles/Home.module.css'
 import Dashboard from '../components/Dashboard'
 import Contracts from '../components/Contracts'
@@ -34,6 +36,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     Wasm.sharedInstance().connect().then(client => {
+      TransactionHelper.sharedInstance(client).start()
       setClient(client)
       setConnectionAttempted(true)
       console.log(client)

@@ -1,27 +1,35 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import { Action, AnyAction } from 'redux'
+import { AnyAction } from 'redux'
 import { createWrapper } from 'next-redux-wrapper'
 import { configureStore, ThunkAction } from '@reduxjs/toolkit'
 import { contractSlice } from './contracts'
+import { blockSlice } from './blocks'
+import { transactionSlice } from './transactions'
 import { nextReduxCookieMiddleware, wrapMakeStore } from 'next-redux-cookie-wrapper'
 
-const makeStore = wrapMakeStore( () =>
-  configureStore({
+let tempStore
+const makeStore = wrapMakeStore(() => {
+  tempStore = configureStore({
     reducer: {
-        [contractSlice.name]: contractSlice.reducer,
+      [contractSlice.name]: contractSlice.reducer,
+      [blockSlice.name]: blockSlice.reducer,
+      [transactionSlice.name]: transactionSlice.reducer,
     },
     devTools: true,
     middleware:  (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(
       nextReduxCookieMiddleware({
-        subtrees: [contractSlice.name],
+        subtrees: [contractSlice.name, blockSlice.name, transactionSlice.name],
       })
     ),
   })
-)
+  return tempStore
+})
 
-export type AppStore = ReturnType<typeof makeStore>;
-export type AppState = ReturnType<AppStore['getState']>;
+export type AppStore = ReturnType<typeof makeStore>
+export type AppState = ReturnType<AppStore['getState']>
+
+export const store: AppStore = tempStore
 
 export type AppDispatch = AppStore["dispatch"];
 export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
@@ -29,8 +37,7 @@ export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
   AppState,
   unknown,
   AnyAction
->;
-
+>
 
 // export an assembled wrapper
 export const wrapper = createWrapper<AppStore>(makeStore, {debug: true});
