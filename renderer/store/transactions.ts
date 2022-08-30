@@ -1,8 +1,8 @@
 import { HYDRATE } from 'next-redux-wrapper'
 import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit'
-
-import { Fee, ModeInfo, TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
-import Long from 'long'
+import { ModeInfo } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
+import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
+import { Any } from 'cosmjs-types/google/protobuf/any'
 
 export interface DecodedTransaction {
   height: number
@@ -12,9 +12,9 @@ export interface DecodedTransaction {
   tx: {
     authInfo?: {
       signerInfos: DecodedSignerInfo[]
-      fee?: Fee
+      fee?: DecodedFee
     }
-    body?: TxBody
+    body?: DecodedTxBody
     signatures: string[]
   }
   gasUsed: number
@@ -22,9 +22,24 @@ export interface DecodedTransaction {
 }
 
 export interface DecodedSignerInfo {
-  publicKey?: any;
-  modeInfo?: ModeInfo;
-  sequence: Long;
+  publicKey?: any
+  modeInfo?: ModeInfo
+  sequence: string
+}
+
+export interface DecodedFee {
+  amount: Coin[]
+  granter: string
+  payer: string
+  gasLimit: string
+}
+
+export interface DecodedTxBody {
+  messages: Any[]
+  memo: string
+  timeoutHeight: string
+  extensionOptions: Any[]
+  nonCriticalExtensionOptions: Any[]
 }
 
 const transactionEntity = createEntityAdapter<DecodedTransaction>({ selectId: (transaction: DecodedTransaction) => transaction.hash })

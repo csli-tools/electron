@@ -47,7 +47,6 @@ export default class TransactionHelper {
 
       const block: Block = {
         height: latestHeight,
-        transactions: [...latestBlockDetails.txs],
         transactionHashes: latestBlockDetails.txs.map(tx => toHex(sha256(tx)))
       }
       getStore().dispatch(blockActions.upsert(block))
@@ -69,7 +68,7 @@ export default class TransactionHelper {
         msg.msg = JSON.parse(Buffer.from(msg.msg).toString())
         deserializedTx.body.messages[index].value = msg
       }
-      console.log('message decoded', indexedTx.tx)
+      console.log('message decoded', msg)
     })
 
     if (indexedTx) {
@@ -83,9 +82,18 @@ export default class TransactionHelper {
             signerInfos: deserializedTx.authInfo.signerInfos.map(info => {
               return {
                 ...info,
-                publicKey: info.publicKey ? { ...info.publicKey, value: decodePubkey(info.publicKey) } : undefined
+                publicKey: info.publicKey ? { ...info.publicKey, value: decodePubkey(info.publicKey) } : undefined,
+                sequence: info.sequence.toString()
               }
-            })
+            }),
+            fee: deserializedTx.authInfo.fee ? {
+              ...deserializedTx.authInfo.fee,
+              gasLimit: deserializedTx.authInfo.fee.gasLimit.toString(),
+            } : undefined
+          },
+          body: {
+            ...deserializedTx.body,
+            timeoutHeight: deserializedTx.body.timeoutHeight.toString()
           }
         }
       }
