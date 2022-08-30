@@ -1,7 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { useAppSelector } from '../store/'
 import { transactionSelectors } from '../store/transactions'
-import { DecodedTransaction } from '../store/transactions'
 
 interface TransactionProps {
 	transactionHash: string
@@ -26,7 +25,7 @@ const Transaction: React.FC<TransactionProps> = ({ transactionHash }) => {
 				<React.Fragment>
 					{
 						transaction.tx.body &&
-						<h3>Found {JSON.stringify(transaction.tx.body)}</h3>
+						<h3>{JSON.stringify(transaction.tx.body)}</h3>
 					}
 					{/* <ul>
 						{

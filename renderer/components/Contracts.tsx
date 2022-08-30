@@ -5,10 +5,7 @@ import Wasm from '../services/Wasm'
 import { useAppSelector, useAppDispatch } from '../store/'
 import { Contract, ContractInstance, contractSelectors, contractActions } from '../store/contracts'
 import styles from '../styles/Contracts.module.css'
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
+import classNames from '../utils/classNames'
 
 const Contracts: React.FC = () => {
   const [editedContractId, setEditedContractId] = useState<number | undefined>(undefined)
