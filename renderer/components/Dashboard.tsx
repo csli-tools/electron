@@ -42,8 +42,8 @@ const Dashboard: React.FC = () => {
             {blocks.map(block => {
               if (!(block.transactionHashes.length === 0)) {
                 return (
-                  <li key={block.height} className={classNames(selectedTransactionHash !== undefined ? "py-0" : "py-5", "px-0 transition-all duration-500")} onClick={() => {handleBlockSelection(block)}}>
-                    <h2 className="cursor-pointer text-lg font-semibold text-seafoam-500 flex items-center space-x-2">
+                  <li key={block.height} className={classNames(selectedTransactionHash !== undefined ? "py-0" : "py-5", "px-0 transition-all duration-500")} >
+                    <h2 className="cursor-pointer text-lg font-semibold text-seafoam-500 flex items-center space-x-2" onClick={() => {handleBlockSelection(block)}}>
                       {block.height}
                       {(selectedBlock === block ? <ChevronDownIcon className="w-4 h-auto flex-shrink-0" /> : <ChevronRightIcon className="w-4 h-auto flex-shrink-0" />)}
                     </h2>
