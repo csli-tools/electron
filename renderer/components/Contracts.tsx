@@ -5,10 +5,7 @@ import Wasm from '../services/Wasm'
 import { useAppSelector, useAppDispatch } from '../store/'
 import { Contract, ContractInstance, contractSelectors, contractActions } from '../store/contracts'
 import styles from '../styles/Contracts.module.css'
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
+import classNames from '../utils/classNames'
 
 const Contracts: React.FC = () => {
   const [editedContractId, setEditedContractId] = useState<number | undefined>(undefined)
@@ -66,7 +63,7 @@ const Contracts: React.FC = () => {
                       }
                     </h2>
                     {/* h-[3.5rem] is the sum total of the line-heights of the three subsequent headers, if they change font size, this value will need to be updated accordingly  */}
-                    <div className={classNames(selectedInstance !== undefined ? "opacity-0 h-0" : " opacity-100 h-[3.5rem]", "overflow-hidden transition-all duration-500")}>
+                    <div className={classNames(selectedInstance !== undefined ? "opacity-0 h-0" : "opacity-100 h-[3.5rem]", "overflow-hidden transition-all duration-500")}>
                       <h3 className="text-sm font-semibold text-gray-800 flex items-center space-x-2">
                         <span>Contract Id: {contract.id}</span>
                       </h3>
