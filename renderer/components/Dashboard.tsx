@@ -6,21 +6,17 @@ import { blockSelectors } from '../store/blocks'
 import { Block } from '../store/blocks'
 import TransactionHelper from '../services/TransactionHelper'
 import Transaction from './Transaction'
+import FilledBlock from './FilledBlock'
 import classNames from '../utils/classNames'
 import styles from '../styles/Contracts.module.css'
 
 const Dashboard: React.FC = () => {
 
-  const [selectedBlock, setSelectedBlock] = useState<Block | undefined>(undefined)
   const [selectedTransactionHash, setSelectedTransactionHash] = useState<string | undefined>(undefined)
 
   const blocks = useAppSelector((state) => {
     return blockSelectors.selectAll(state)
   })
-
-  const handleBlockSelection = useCallback((block) => {
-    selectedBlock === block ? setSelectedBlock(undefined) : setSelectedBlock(block)
-  }, [selectedBlock])
 
   const handleTransactionSelection = useCallback((transactionHash) => {
     TransactionHelper.sharedInstance().saveTransaction(transactionHash).then(() => {
@@ -43,24 +39,7 @@ const Dashboard: React.FC = () => {
               if (!(block.transactionHashes.length === 0)) {
                 return (
                   <li key={block.height} className={classNames(selectedTransactionHash !== undefined ? "py-0" : "py-5", "px-0 transition-all duration-500")} >
-                    <h2 className="cursor-pointer text-lg font-semibold text-seafoam-500 flex items-center space-x-2" onClick={() => {handleBlockSelection(block)}}>
-                      {block.height}
-                      {(selectedBlock === block ? <ChevronDownIcon className="w-4 h-auto flex-shrink-0" /> : <ChevronRightIcon className="w-4 h-auto flex-shrink-0" />)}
-                    </h2>
-                    { (selectedBlock === block) && 
-                      <ul>
-                        { 
-                          selectedBlock.transactionHashes.map(hash => {
-                            return (
-                              <li key={hash} className={classNames((selectedTransactionHash !== undefined ? "border-transparent mt-0 mb-1" : "border-gray-200 mt-2 mb-2"), (selectedTransactionHash === hash ? "bg-seafoam-300" : "bg-transparent"), "flex items-center w-full justify-between border rounded p-2 cursor-pointer text-gray-900")} onClick={() => handleTransactionSelection(hash)}>
-                                <div className="truncate">{hash}</div>
-                                <ChevronRightIcon className="w-4 h-auto flex-shrink-0" />
-                              </li>
-                            )
-                          })
-                        }
-                      </ul>
-                    }
+                    <FilledBlock block={block} handleTransactionSelection={handleTransactionSelection} selectedTransactionHash={selectedTransactionHash} />
                   </li>
                 )
               }
