@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from "react";
-import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 
 import classNames from '../utils/classNames'
 import { Block } from "../store/blocks";
-import { transactionSelectors } from '../store/transactions'
 
 interface FilledBlockProps {
 	block: Block
@@ -13,7 +12,7 @@ interface FilledBlockProps {
 
 const FilledBlock: React.FC<FilledBlockProps> = ({ block, handleTransactionSelection, selectedTransactionHash }) => {
 
-  const [selectedBlock, setSelectedBlock] = useState<boolean>(false)
+  const [selectedBlock, setSelectedBlock] = useState<boolean>(true)
 
   const handleBlockSelection = useCallback(() => {
     setSelectedBlock(!selectedBlock)
@@ -23,22 +22,22 @@ const FilledBlock: React.FC<FilledBlockProps> = ({ block, handleTransactionSelec
     <React.Fragment>
       <h2 className="cursor-pointer text-lg font-semibold text-seafoam-500 flex items-center space-x-2" onClick={handleBlockSelection}>
         {block.height}
-        {(selectedBlock ? <ChevronDownIcon className="w-4 h-auto flex-shrink-0" /> : <ChevronRightIcon className="w-4 h-auto flex-shrink-0" />)}
+        {(selectedBlock ? <ChevronDownIcon className="w-4 flex-shrink-0" /> : <ChevronRightIcon className="w-4 flex-shrink-0" />)}
       </h2>
-      { selectedBlock && 
+      <div style={{height: selectedBlock ? (block.transactionHashes.length * 2.5) + "rem" : 0 }} className="overflow-hidden transition-all duration-500">
         <ul>
           { 
             block.transactionHashes.map(hash => {
               return (
-                <li key={hash} className={classNames((selectedTransactionHash !== undefined ? "border-transparent mt-0 mb-1" : "border-gray-200 mt-2 mb-2"), (selectedTransactionHash === hash ? "bg-seafoam-300" : "bg-transparent"), "flex items-center w-full justify-between border rounded p-2 cursor-pointer text-gray-900")} onClick={() => handleTransactionSelection(hash)}>
+                <li key={hash} className={classNames((selectedTransactionHash === hash ? "bg-seafoam-300" : "bg-transparent"), "border-transparent flex items-center w-full justify-between border rounded p-2 cursor-pointer text-gray-900 h-10")} onClick={() => handleTransactionSelection(hash)}>
                   <div className="truncate">{hash}</div>
-                  <ChevronRightIcon className="w-4 h-auto flex-shrink-0" />
+                  <ChevronRightIcon className="w-4 flex-shrink-0" />
                 </li>
               )
             })
           }
         </ul>
-      }
+      </div>
     </React.Fragment>
 	)
 }

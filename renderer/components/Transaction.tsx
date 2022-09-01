@@ -1,46 +1,45 @@
-import React from "react";
+import React from "react"
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
+import json from 'react-syntax-highlighter/dist/cjs/languages/hljs/json'
+import docco from 'react-syntax-highlighter/dist/cjs/styles/hljs/docco'
+
+SyntaxHighlighter.registerLanguage('json', json);
+
+
 import { useAppSelector } from '../store/'
 import { transactionSelectors } from '../store/transactions'
 
 interface TransactionProps {
-	transactionHash: string
+	transactionHash: string | undefined
 }
 
 const Transaction: React.FC<TransactionProps> = ({ transactionHash }) => {
 
 	const transaction = useAppSelector((state) => {
-		const hash = transactionHash.toUpperCase()
-		return transactionSelectors.selectById(state, hash)
+		if (transactionHash !== undefined) {
+			const hash = transactionHash.toUpperCase()
+			return transactionSelectors.selectById(state, hash)
+		} else {
+			return undefined
+		}
 	})
 
-	// const transactions = useAppSelector((state) => {
-	// 	return transactionSelectors.selectAll(state)
-	// })
-
 	return (
-		<React.Fragment>
-			<h3 className="text-white">Transaction {transactionHash}</h3>
-			{
-				transaction &&
-				<React.Fragment>
-					{
-						transaction.tx.body &&
-						<h3>{JSON.stringify(transaction.tx.body)}</h3>
+		<div className="p-6">
+					{ transaction === undefined &&
+						<span className="text-2xl flex font-semibold text-gray-900">
+							Select a transaction from the list to the left to inspect it
+						</span>
 					}
-					{/* <ul>
-						{
-							transactions.map(tx => {
-								return (
-									<li>
-										{tx.hash}
-									</li>
-								)
-							})
-						}
-					</ul> */}
-				</React.Fragment>
-			}
-		</React.Fragment>
+					{ transactionHash !== undefined &&
+						<React.Fragment>
+							<span className="text-2xl flex font-semibold text-gray-900">Transaction</span>
+							<SyntaxHighlighter language="json" style={docco} customStyle={{borderRadius: "0.25rem", background: "#D3FDF9", margin: "1rem"}}>
+								{JSON.stringify(transaction, null, 2)}
+							</SyntaxHighlighter>
+						</React.Fragment>
+					}
+		</div>
 	)
 }
 

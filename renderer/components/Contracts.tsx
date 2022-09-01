@@ -41,7 +41,7 @@ const Contracts: React.FC = () => {
 
   return (
     <div className="relative">
-      <div className={classNames(selectedInstance !== undefined ? "w-72 bg-seafoam-100" : "bg-white expanded w-full", "min-h-screen py-6 transition-all duration-500 overflow-y-scroll")}>
+      <div className={classNames(selectedInstance !== undefined ? "w-72 bg-seafoam-100" : "bg-white expanded w-full", "h-screen py-6 transition-all duration-500 overflow-y-scroll")}>
         <div className={classNames("px-4 sm:px-6 md:px-8")}>
           <h1 className={classNames(selectedInstance !== undefined ? "cursor-pointer text-xl" : "text-2xl", "flex font-semibold text-gray-900 transition-all duration-500")} onClick={() => setSelectedInstance(undefined)}>
             <ChevronLeftIcon className={classNames(selectedInstance !== undefined ? "w-4 opacity-100" : "w-0 opacity-0" , "h-auto transition-all duration-500")} />
