@@ -1,15 +1,5 @@
-import { CosmWasmClient, isMsgExecuteEncodeObject } from '@cosmjs/cosmwasm-stargate'
-import { isMsgSendEncodeObject } from '@cosmjs/stargate'
-import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx"
-import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
-import { toHex, toBase64 } from '@cosmjs/encoding'
-import { sha256 } from '@cosmjs/crypto'
-import { decodeTxRaw, DecodedTxRaw, decodePubkey } from '@cosmjs/proto-signing'
-
-import { getStore } from '../store'
-import { Block, blockActions } from '../store/blocks'
 import { JSONSchema7, JSONSchema7TypeName } from 'json-schema'
-import { ContractDetails, Query, QueryParameter, contractDetailsSelectors, contractDetailsActions } from '../store/contractDetails'
+import { ContractDetails, Query, QueryParameter, contractDetailsActions } from '../store/contractDetails'
 
 
 export default class ContractHelper {

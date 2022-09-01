@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
-import { JSONSchema7, JSONSchema7TypeName } from 'json-schema'
+import { JSONSchema7 } from 'json-schema'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import json from 'react-syntax-highlighter/dist/cjs/languages/hljs/json'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/hljs/bash'
@@ -13,7 +13,7 @@ SyntaxHighlighter.registerLanguage('javascript', javascript);
 import Wasm from '../services/Wasm'
 import { useAppSelector, useAppDispatch } from '../store/'
 import { ContractInstance } from '../store/contracts'
-import { ContractDetails, Query, QueryParameter, contractDetailsSelectors, contractDetailsActions } from '../store/contractDetails'
+import { Query, QueryParameter, contractDetailsSelectors, contractDetailsActions } from '../store/contractDetails'
 import QueryParameterField from './QueryParameterField'
 import ContractHelper from '../services/ContractHelper'
 
