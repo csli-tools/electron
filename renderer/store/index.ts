@@ -4,6 +4,7 @@ import { createWrapper } from 'next-redux-wrapper'
 import { configureStore, ThunkAction } from '@reduxjs/toolkit'
 import { contractSlice } from './contracts'
 import { blockSlice } from './blocks'
+import { contractDetailsSlice } from './contractDetails'
 import { transactionSlice } from './transactions'
 import { nextReduxCookieMiddleware, wrapMakeStore } from 'next-redux-cookie-wrapper'
 
@@ -14,12 +15,13 @@ const makeStore = wrapMakeStore(() => {
       [contractSlice.name]: contractSlice.reducer,
       [blockSlice.name]: blockSlice.reducer,
       [transactionSlice.name]: transactionSlice.reducer,
+      [contractDetailsSlice.name]: contractDetailsSlice.reducer,
     },
     devTools: true,
     middleware:  (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(
       nextReduxCookieMiddleware({
-        subtrees: [contractSlice.name, blockSlice.name, transactionSlice.name],
+        subtrees: [contractSlice.name, blockSlice.name, transactionSlice.name, contractDetailsSlice.name],
       })
     ),
   })
