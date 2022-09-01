@@ -13,7 +13,7 @@ SyntaxHighlighter.registerLanguage('javascript', javascript);
 import Wasm from '../services/Wasm'
 import { useAppSelector, useAppDispatch } from '../store/'
 import { ContractInstance } from '../store/contracts'
-import { Query, QueryParameter, contractDetailsSelectors, contractDetailsActions } from '../store/contractDetails'
+import { Query, QueryParameter, contractDetailsSelectors } from '../store/contractDetails'
 import QueryParameterField from './QueryParameterField'
 import ContractHelper from '../services/ContractHelper'
 
