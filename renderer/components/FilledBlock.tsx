@@ -5,7 +5,7 @@ import classNames from '../utils/classNames'
 import { Block } from "../store/blocks";
 
 interface FilledBlockProps {
-	block: Block
+  block: Block
   handleTransactionSelection: (hash: string) => void
   selectedTransactionHash: string
 }

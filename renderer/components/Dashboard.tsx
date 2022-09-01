@@ -6,7 +6,7 @@ import TransactionHelper from '../services/TransactionHelper'
 import Transaction from './Transaction'
 import FilledBlock from './FilledBlock'
 import classNames from '../utils/classNames'
-import styles from '../styles/Contracts.module.css'
+import styles from '../styles/Subpanel.module.css'
 
 const Dashboard: React.FC = () => {
 

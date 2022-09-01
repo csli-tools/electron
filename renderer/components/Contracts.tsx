@@ -4,7 +4,7 @@ import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
 import Wasm from '../services/Wasm'
 import { useAppSelector, useAppDispatch } from '../store/'
 import { Contract, ContractInstance, contractSelectors, contractActions } from '../store/contracts'
-import styles from '../styles/Contracts.module.css'
+import styles from '../styles/Subpanel.module.css'
 import classNames from '../utils/classNames'
 
 const Contracts: React.FC = () => {
