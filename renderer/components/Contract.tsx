@@ -201,7 +201,7 @@ const Contract: React.FC<ContractProps> = ({ instance }) => {
         {!contractDetails &&
           <div className="flex flex-col justify-center items-center h-full w-full space-y-4">
             <p>This smart contract isn’t configured yet. Attach your contract’s schema files to continue.</p>
-            <input type="file" multiple onChange={(e) => uploadSchemas(e)} />
+            <input className="rounded border p-2" type="file" multiple onChange={(e) => uploadSchemas(e)} />
           </div>
         }
         {contractDetails &&
