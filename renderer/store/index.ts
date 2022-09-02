@@ -16,7 +16,7 @@ const makeStore = wrapMakeStore(() => {
       [transactionSlice.name]: transactionSlice.reducer,
     },
     devTools: true,
-    middleware:  (getDefaultMiddleware) =>
+    middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(
       nextReduxCookieMiddleware({
         subtrees: [contractSlice.name, blockSlice.name, transactionSlice.name],
