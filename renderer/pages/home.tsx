@@ -5,6 +5,7 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import {
   ReceiptPercentIcon,
   CodeBracketIcon,
+  KeyIcon
 } from '@heroicons/react/24/outline'
 
 import TransactionHelper from '../services/TransactionHelper'
@@ -12,17 +13,20 @@ import TransactionHelper from '../services/TransactionHelper'
 import styles from '../styles/Home.module.css'
 import Dashboard from '../components/Dashboard'
 import Contracts from '../components/Contracts'
+import Keys from '../components/Keys'
 import Wasm from '../services/Wasm'
 import Logo from '../components/svg/Logo.svg'
 
 enum Tab {
   Transactions,
-  Contracts
+  Contracts,
+  Keys
 }
 
 const navigation = [
   { tab:Tab.Transactions, name: 'Dashboard', href: '#', icon: ReceiptPercentIcon },
   { tab:Tab.Contracts, name: 'Contracts', href: '#', icon: CodeBracketIcon },
+  { tab:Tab.Keys, name: 'Keys', href: '#', icon: KeyIcon },
 ]
 
 function classNames(...classes: string[]) {
@@ -90,6 +94,9 @@ const Home: NextPage = () => {
               }
               {tab === Tab.Contracts &&
                 <Contracts />
+              }
+              {tab === Tab.Keys &&
+                <Keys />
               }
             </main>
           </div>
