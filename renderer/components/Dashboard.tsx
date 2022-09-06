@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
     <div className="relative">
       <div className="w-72 bg-seafoam-100 h-screen py-6 transition-all duration-500 overflow-y-scroll">
         <div className="px-4 sm:px-6 md:px-8">
-          <h1 className={classNames(selectedTransactionHash !== undefined ? "cursor-pointer" : "", "text-xl flex font-semibold text-gray-900")} onClick={() => setSelectedTransactionHash(undefined)}>
+          <h1 className="text-xl flex font-semibold text-gray-900">
             <span className="mb-4">Blocks</span>
           </h1>
         </div>
