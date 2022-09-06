@@ -3,7 +3,6 @@ import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolki
 
 export interface Block {
   height: number
-  transactions: Uint8Array[]
   transactionHashes: string[]
 }
 
