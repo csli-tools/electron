@@ -7,6 +7,7 @@ export interface Contract {
   nickname?: string
 }
 export interface ContractInstance {
+  id: number
   address: string
   admin?: string
   label: string

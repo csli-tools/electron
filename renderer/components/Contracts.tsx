@@ -4,6 +4,7 @@ import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
 import Wasm from '../services/Wasm'
 import { useAppSelector, useAppDispatch } from '../store/'
 import { Contract, ContractInstance, contractSelectors, contractActions } from '../store/contracts'
+import { default as ContractInstanceElement } from './Contract'
 import styles from '../styles/Subpanel.module.css'
 import classNames from '../utils/classNames'
 
@@ -31,7 +32,12 @@ const Contracts: React.FC = () => {
         const contracts: Contract[] = codes.map((code, index) => {
           return {
             id: code.id,
-            instances: contractDetails[index]
+            instances: contractDetails[index].map(instance => {
+              return {
+                id: code.id,
+                ...instance
+              }
+            })
           }
         })
         appDispatch(contractActions.upsertMany(contracts))
@@ -100,11 +106,9 @@ const Contracts: React.FC = () => {
       </div>
       
       <div className={classNames(styles.subpanelWidth, (selectedInstance !== undefined ? "left-72" : "left-full"), "transition-all duration-500 absolute top-0 h-screen overflow-y-scroll")}>
-        
-        <div className="p-6">
-          <h1 className="flex text-2xl font-semibold text-gray-900">Contract Details</h1>
-          <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 mt-4" />
-        </div>
+        {selectedInstance &&
+          <ContractInstanceElement instance={selectedInstance} />
+        }
       </div>
     </div>
   )

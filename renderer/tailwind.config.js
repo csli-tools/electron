@@ -10,6 +10,8 @@ module.exports = {
       current: 'currentColor',
       'white': '#ffffff',
       'black': '#000000',
+      'succuss': '#00aa00',
+      'failure': '#aa0000',
       'seafoam': {
         100: '#D3FDF9',
         300: '#77F8EB',
