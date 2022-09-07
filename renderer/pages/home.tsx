@@ -29,6 +29,11 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+const test = async () => {
+  const response = await window.csliNode.ping()
+  console.log(response) // prints out 'pong'
+}
+
 const Home: NextPage = () => {
   const [tab, setTab] = useState(Tab.Transactions)
   const [client, setClient] = useState<CosmWasmClient | undefined>() // this component will validate our cosmwasmclient and block any rendering if it doesn't connect, all other components can simply assume that it exists and is connected
@@ -79,6 +84,8 @@ const Home: NextPage = () => {
                       {item.name}
                     </a>
                   ))}
+                  <div><button onClick={() => test()}>test1</button></div>
+                  <div><button>test2</button></div>
                 </nav>
               </div>
             </div>

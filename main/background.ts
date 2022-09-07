@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 
@@ -12,10 +12,9 @@ if (isProd) {
 
 (async () => {
   await app.whenReady();
-
   const mainWindow = createWindow('main', {
     width: 1000,
-    height: 600,
+    height: 600
   });
 
   if (isProd) {
@@ -30,3 +29,5 @@ if (isProd) {
 app.on('window-all-closed', () => {
   app.quit();
 });
+
+ipcMain.handle('ping', () => 'pong')
