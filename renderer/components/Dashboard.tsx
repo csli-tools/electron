@@ -25,13 +25,17 @@ const Dashboard: React.FC = () => {
   
   return (
     <div className="relative">
-      <div className="w-72 bg-seafoam-100 h-screen py-6 transition-all duration-500 overflow-y-scroll">
+      <div className="w-72 bg-seafoam-100 h-screen py-8 transition-all duration-500 overflow-y-scroll">
         <div className="px-4 sm:px-6 md:px-8">
           <h1 className="text-xl flex font-semibold text-gray-900">
             <span className="mb-4">Blocks</span>
           </h1>
         </div>
-        <div className="w-full mx-auto px-4 sm:px-6 md:px-8">
+        <div className="w-full mx-auto px-4 sm:px-6 md:px-8 mt-4">
+          {
+            !blocks.find(block => block.transactionHashes.length != 0) &&
+            <p className="italic">All blocks currently empty</p>
+          }
           <ul className="divide-y divide-seafoam-100">
             {blocks.map(block => {
               if (!(block.transactionHashes.length === 0)) {

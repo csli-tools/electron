@@ -188,9 +188,9 @@ const Contract: React.FC<ContractProps> = ({ instance }) => {
   
   return (
     <div>
-      <div className="p-6 h-screen">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Contract Details</h1>
+      <div className="p-8 h-screen">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-xl font-semibold text-gray-900">Contract Details</h1>
           {contractDetails &&
             <div>
               <label htmlFor="replace-schemas" className='bg-seafoam-500 text-white rounded p-2 text-xs cursor-pointer' >Replace Schemas</label>
@@ -199,7 +199,7 @@ const Contract: React.FC<ContractProps> = ({ instance }) => {
           }
         </div>
         {!contractDetails &&
-          <div className="flex flex-col justify-center items-center h-full w-full space-y-4">
+          <div className="flex flex-col h-full w-full space-y-8">
             <p>This smart contract isn’t configured yet. Attach your contract’s schema files to continue.</p>
             <input className="rounded border p-2" type="file" multiple onChange={(e) => uploadSchemas(e)} />
           </div>

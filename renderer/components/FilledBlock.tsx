@@ -29,7 +29,7 @@ const FilledBlock: React.FC<FilledBlockProps> = ({ block, handleTransactionSelec
           { 
             block.transactionHashes.map(hash => {
               return (
-                <li key={hash} className={classNames((selectedTransactionHash === hash ? "bg-seafoam-300" : "bg-transparent"), "border-transparent flex items-center w-full justify-between border rounded p-2 cursor-pointer text-gray-900 h-10")} onClick={() => handleTransactionSelection(hash)}>
+                <li key={hash} className={classNames((selectedTransactionHash === hash ? "bg-seafoam-300" : "bg-transparent"), "border-transparent flex items-center w-full justify-between border rounded px-2 py-4 cursor-pointer text-gray-900 h-10")} onClick={() => handleTransactionSelection(hash)}>
                   <div className="truncate">{hash}</div>
                   <ChevronRightIcon className="w-4 flex-shrink-0" />
                 </li>

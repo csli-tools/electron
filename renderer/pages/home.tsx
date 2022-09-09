@@ -62,13 +62,13 @@ const Home: NextPage = () => {
         <div className="min-h-screen">
           <div className="flex w-64 flex-col fixed inset-y-0">
             {/* Sidebar component, swap this element with another sidebar if you like */}
-            <div className="flex flex-col flex-grow pt-5 bg-seafoam-500 overflow-y-auto">
-              <div className="flex items-center flex-shrink-0 px-4 text-white space-x-2">
+            <div className="flex flex-col flex-grow pt-8 bg-seafoam-500 overflow-y-auto">
+              <div className="flex items-center flex-shrink-0 px-4 text-white space-x-4">
                 <Logo className="h-8 w-auto" />
                 <span>CSLI</span>
               </div>
-              <div className="mt-5 flex-1 flex flex-col">
-                <nav className="flex-1 px-2 pb-4 space-y-1">
+              <div className="mt-8 flex-1 flex flex-col">
+                <nav className="flex-1 px-4 pb-4 space-y-2">
                   {navigation.map((item) => (
                     <a
                       key={item.name}

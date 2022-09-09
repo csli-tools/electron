@@ -47,10 +47,10 @@ const Contracts: React.FC = () => {
 
   return (
     <div className="relative">
-      <div className={classNames(selectedInstance !== undefined ? "w-72 bg-seafoam-100" : "bg-white expanded w-full", "h-screen py-6 transition-all duration-500 overflow-y-scroll")}>
+      <div className={classNames(selectedInstance !== undefined ? "w-72 bg-seafoam-100" : "bg-white expanded w-full", "h-screen py-8 transition-all duration-500 overflow-y-scroll")}>
         <div className={classNames("px-4 sm:px-6 md:px-8")}>
-          <h1 className={classNames(selectedInstance !== undefined ? "cursor-pointer text-xl" : "text-2xl", "flex font-semibold text-gray-900 transition-all duration-500")} onClick={() => setSelectedInstance(undefined)}>
-            <ChevronLeftIcon className={classNames(selectedInstance !== undefined ? "w-4 opacity-100" : "w-0 opacity-0" , "h-auto transition-all duration-500")} />
+          <h1 className={classNames(selectedInstance !== undefined ? "cursor-pointer text-xl" : "text-xl", "flex font-semibold text-gray-900 transition-all duration-500")} onClick={() => setSelectedInstance(undefined)}>
+            <ChevronLeftIcon className={classNames(selectedInstance !== undefined ? "w-4 opacity-100 mr-2" : "w-0 opacity-0" , "h-auto transition-all duration-500")} />
             <span>Contracts</span>
           </h1>
         </div>
@@ -58,18 +58,18 @@ const Contracts: React.FC = () => {
           <ul className="divide-y divide-seafoam-100">
             {contracts.map(contract => {
               return (
-                <li key={contract.id} className={classNames(selectedInstance !== undefined ? "py-0" : "py-5", "px-0 transition-all duration-500")}>
+                <li key={contract.id} className={classNames(selectedInstance !== undefined ? "py-8" : "py-8", "px-0 transition-all duration-500")}>
                   <div className="relative">
                     <h2 className="text-lg font-semibold text-seafoam-500 flex items-center space-x-2">
                       {!contract.nickname && editedContractId !== contract.id &&
-                        <a href="#" className="text-seafoam-500 p-2 -ml-2" onClick={() => setEditedContractId(contract.id)}>Set nickname</a>
+                        <a href="#" className="text-seafoam-500 px-2 -ml-2" onClick={() => setEditedContractId(contract.id)}>Set nickname</a>
                       }
                       { (contract.nickname || editedContractId === contract.id) &&
-                        <input className="p-2 -ml-2 bg-transparent" placeholder="Contract Nickname" autoFocus={editedContractId === contract.id} type="text" value={contract.nickname} onChange={(e) => {appDispatch(contractActions.setNickname({id: contract.id, nickname: e.target.value}))}} />
+                        <input className="px-2 -ml-2 bg-transparent" placeholder="Contract Nickname" autoFocus={editedContractId === contract.id} type="text" value={contract.nickname} onChange={(e) => {appDispatch(contractActions.setNickname({id: contract.id, nickname: e.target.value}))}} />
                       }
                     </h2>
                     {/* h-[3.5rem] is the sum total of the line-heights of the three subsequent headers, if they change font size, this value will need to be updated accordingly  */}
-                    <div className={classNames(selectedInstance !== undefined ? "opacity-0 h-0" : "opacity-100 h-[3.5rem]", "overflow-hidden transition-all duration-500")}>
+                    <div className={classNames(selectedInstance !== undefined ? "opacity-0 h-0 mt-0" : "opacity-100 h-[3.5rem] mt-", "overflow-hidden transition-all duration-500")}>
                       <h3 className="text-sm font-semibold text-gray-800 flex items-center space-x-2">
                         <span>Contract Id: {contract.id}</span>
                       </h3>
@@ -84,12 +84,12 @@ const Contracts: React.FC = () => {
                     <ul>
                       {contract.instances.map(instance => {
                         return (
-                          <li key={instance.address} className={classNames((selectedInstance !== undefined ? "border-transparent mt-0 mb-1" : "border-gray-200 mt-2 mb-2"), (selectedInstance?.address === instance.address ? "bg-seafoam-300" : "bg-transparent"), "flex items-center w-full justify-between border rounded p-2 cursor-pointer")} onClick={() => setSelectedInstance(instance)}>
+                          <li key={instance.address} className={classNames((selectedInstance !== undefined ? "border-transparent mt-4 mb-1" : "border-gray-200 mt-8 mb-2"), (selectedInstance?.address === instance.address ? "bg-seafoam-300" : "bg-transparent"), "flex items-center w-full justify-between border rounded p-2 cursor-pointer")} onClick={() => setSelectedInstance(instance)}>
                             <div className="truncate">
                               <div className={classNames(selectedInstance !== undefined ? "inline" : "block", "font-bold")}>{instance.label} </div>
                               <div className={classNames(selectedInstance !== undefined ? "inline" : "block", "truncate")}>{instance.address}</div>
                             </div>
-                            <ChevronRightIcon className="w-4 h-auto flex-shrink-0" />
+                            <ChevronRightIcon className="w-4 h-auto flex-shrink-0 ml-2" />
                           </li>
                         )
                       })}

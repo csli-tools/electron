@@ -18,12 +18,11 @@ const Keys: React.FC = () => {
   }, [])
 
   return (
-    <div className="h-screen p-6">
-      <div className="h-full flex flex-col justify-center items-center text-center">
-      <div className="w-2/3 space-y-4">
+    <div className="p-8 h-full px-4 sm:px-6 md:px-8">
+      <div className="h-full w-full space-y-8">
+        <h2 className="text-xl flex font-semibold text-gray-900">Key Management</h2>
         <p>In order to maximize compatibility with <span className="italic rounded bg-seafoam-100 px-1">wasmd</span>, CSLI ships with a small helper utility called <span className="italic rounded bg-seafoam-100 px-1">key-helper</span>. If you authorize it, it will interface with your operating system’s secure store and periodically access private keys to sign transactions that you initiate in CSLI. If you have exsisting keys in wasmd, you‘ll be immediately prompted for access to each of them upon authorization.</p>
         <button className="rounded border p-2">Authorize</button>
-      </div>
       </div>
     </div>
   )
