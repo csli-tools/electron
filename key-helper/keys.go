@@ -12,6 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func getKey(writer http.ResponseWriter, request *http.Request) {
@@ -85,7 +86,8 @@ func getKeys(writer http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
-
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("wasm", "wasm")
 	http.HandleFunc("/key", getKey)
 	http.HandleFunc("/keys", getKeys)
 	log.Fatal(http.ListenAndServe(":8889", nil))
