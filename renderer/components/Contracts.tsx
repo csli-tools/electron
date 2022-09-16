@@ -49,16 +49,16 @@ const Contracts: React.FC = () => {
     <div className="relative">
       <div className={classNames(selectedInstance !== undefined ? "w-72 bg-seafoam-100" : "bg-white expanded w-full", "h-screen py-8 transition-all duration-500 overflow-y-scroll")}>
         <div className={classNames("px-4 sm:px-6 md:px-8")}>
-          <h1 className={classNames(selectedInstance !== undefined ? "cursor-pointer text-xl" : "text-xl", "flex font-semibold text-gray-900 transition-all duration-500")} onClick={() => setSelectedInstance(undefined)}>
+          <h1 className={classNames(selectedInstance !== undefined ? "cursor-pointer text-xl" : "text-xl", "flex font-semibold text-gray-900 transition-all duration-500 mb-4")} onClick={() => setSelectedInstance(undefined)}>
             <ChevronLeftIcon className={classNames(selectedInstance !== undefined ? "w-4 opacity-100 mr-2" : "w-0 opacity-0" , "h-auto transition-all duration-500")} />
             <span>Contracts</span>
           </h1>
         </div>
         <div className="w-full mx-auto px-4 sm:px-6 md:px-8">
-          <ul className="divide-y divide-seafoam-100">
+          <ul className={classNames(selectedInstance !== undefined ? "space-y-0" : "space-y-6", "divide-y divide-seafoam-100 mb-4")}>
             {contracts.map(contract => {
               return (
-                <li key={contract.id} className={classNames(selectedInstance !== undefined ? "py-8" : "py-8", "px-0 transition-all duration-500")}>
+                <li key={contract.id} className={classNames("px-0 pt-4 transition-all duration-500")}>
                   <div className="relative">
                     <h2 className="text-lg font-semibold text-seafoam-500 flex items-center space-x-2">
                       {!contract.nickname && editedContractId !== contract.id &&
@@ -69,7 +69,7 @@ const Contracts: React.FC = () => {
                       }
                     </h2>
                     {/* h-[3.5rem] is the sum total of the line-heights of the three subsequent headers, if they change font size, this value will need to be updated accordingly  */}
-                    <div className={classNames(selectedInstance !== undefined ? "opacity-0 h-0 mt-0" : "opacity-100 h-[3.5rem] mt-", "overflow-hidden transition-all duration-500")}>
+                    <div className={classNames(selectedInstance !== undefined ? "opacity-0 h-0" : "opacity-100 h-[3.5rem]", "overflow-hidden transition-all duration-500")}>
                       <h3 className="text-sm font-semibold text-gray-800 flex items-center space-x-2">
                         <span>Contract Id: {contract.id}</span>
                       </h3>
@@ -81,10 +81,10 @@ const Contracts: React.FC = () => {
                       </h4>
                     </div>
                     
-                    <ul>
+                    <ul className={classNames(selectedInstance !== undefined ? "space-y-1 mt-2" : "space-y-4 mt-4")}>
                       {contract.instances.map(instance => {
                         return (
-                          <li key={instance.address} className={classNames((selectedInstance !== undefined ? "border-transparent mt-4 mb-1" : "border-gray-200 mt-8 mb-2"), (selectedInstance?.address === instance.address ? "bg-seafoam-300" : "bg-transparent"), "flex items-center w-full justify-between border rounded p-2 cursor-pointer")} onClick={() => setSelectedInstance(instance)}>
+                          <li key={instance.address} className={classNames((selectedInstance !== undefined ? "border-transparent" : "border-gray-200"), (selectedInstance?.address === instance.address ? "bg-seafoam-300" : "bg-transparent"), "flex items-center w-full justify-between border rounded p-2 cursor-pointer")} onClick={() => setSelectedInstance(instance)}>
                             <div className="truncate">
                               <div className={classNames(selectedInstance !== undefined ? "inline" : "block", "font-bold")}>{instance.label} </div>
                               <div className={classNames(selectedInstance !== undefined ? "inline" : "block", "truncate")}>{instance.address}</div>

@@ -107,6 +107,7 @@ const Home: NextPage = () => {
           Failed to connect to wasm
         </div>
       }
+      <div id="modal-root" />
     </div>
   )
 }

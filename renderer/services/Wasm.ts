@@ -1,5 +1,7 @@
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate"
+import { CosmWasmClient, SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate"
+import { DirectSecp256k1Wallet } from "@cosmjs/proto-signing"
 
+import KeyHelper from "./KeyHelper"
 
 export default class Wasm {
   private static instance: Wasm
@@ -17,10 +19,15 @@ export default class Wasm {
     }
     return Wasm.instance
   }
+  
+  async signingClient(key: string) {
+    const keyBytes = await KeyHelper.getPrivateKey(key)
+    const signer = await DirectSecp256k1Wallet.fromKey(keyBytes, "wasm")
+    return await SigningCosmWasmClient.connectWithSigner(this.rpcEndpoint, signer)
+  }
 
   async connect() {
     try {
-
       this.client = await CosmWasmClient.connect(this.rpcEndpoint)
       return this.client
     } catch (error: any) {
