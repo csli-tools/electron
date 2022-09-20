@@ -12,7 +12,6 @@ export default class Wasm {
     this.client = undefined
   }
 
-
   static sharedInstance() {
     if (!Wasm.instance) {
       Wasm.instance = new Wasm()

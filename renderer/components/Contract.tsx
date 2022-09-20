@@ -5,6 +5,7 @@ import json from 'react-syntax-highlighter/dist/cjs/languages/hljs/json'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/hljs/bash'
 import javascript from 'react-syntax-highlighter/dist/cjs/languages/hljs/javascript'
 import docco from 'react-syntax-highlighter/dist/cjs/styles/hljs/docco'
+import { Coin, StdFee } from "@cosmjs/stargate";
 
 SyntaxHighlighter.registerLanguage('json', json);
 SyntaxHighlighter.registerLanguage('bash', bash);
@@ -13,6 +14,7 @@ SyntaxHighlighter.registerLanguage('javascript', javascript);
 import Wasm from '../services/Wasm'
 import { useAppSelector, useAppDispatch } from '../store/'
 import { ContractInstance } from '../store/contracts'
+import { keySelectors } from '../store/keys'
 import { Query, QueryParameter, contractDetailsSelectors } from '../store/contractDetails'
 import QueryParameterField from './QueryParameterField'
 import ContractHelper from '../services/ContractHelper'
@@ -42,8 +44,16 @@ const Contract: React.FC<ContractProps> = ({ instance }) => {
   const [activeQuery, setActiveQuery] = useState<any | undefined>(undefined)
   const [snippetLanguage, setSnippetLanguage] = useState<SnippetLanguage>(SnippetLanguage.Javascript)
   const [contractState, setContractState] = useState<any | undefined>(undefined)
+  const [signer, setSigner] = useState<string | undefined>(undefined)
+  const [memo, setMemo] = useState<string | undefined>(undefined)
+  const [gas, setGas] = useState<string | undefined>(undefined)
+  const [funds, setFunds] = useState<string | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
+  
   const contractDetails = useAppSelector((state) => contractDetailsSelectors.selectById(state, instance.id))
   const appDispatch = useAppDispatch()
+  
+  const keys = useAppSelector((state) => keySelectors.selectAll(state))
   
   // if we've switched instances to an instance that doesn't have any of the currently selected contract message types, try to switch to a type it does have
   useEffect(() => {
@@ -162,15 +172,52 @@ const Contract: React.FC<ContractProps> = ({ instance }) => {
     try {
       Wasm.sharedInstance().client!.queryContractSmart(instance.address, activeQuery).then(async state => {
         setContractState(state)
+        setLoading(false)
       }).catch((error) => {
         setContractState(error.message)
+        setLoading(false)
       })
     } catch (error) {
-      debugger
       setContractState(error)
+      setLoading(false)
+    }
+  }, [instance, activeQuery])
+  
+  const sendExecute = useCallback(() => {
+    if (!signer || !gas) {
+      setLoading(false)
+      return
+    }    
+    try {
+      Wasm.sharedInstance().signingClient(signer).then(async signingClient => {
+        const key = keys.filter(key => key.name === signer)[0]
+        const cash: Coin[] = [{amount: funds || "0", denom: "stake"}]
+        const fee: StdFee = {
+          amount: cash,
+          gas
+        }
+        const result = await signingClient.execute(key.address, instance.address, activeQuery, fee, memo, funds ? cash : undefined)
+        setContractState(result)
+        setLoading(false)
+      }).catch((error) => {
+        setContractState(error.message)
+        setLoading(false)
+      })
+    } catch (error) {
+      setContractState(error)
+      setLoading(false)
+    }
+  }, [instance, activeQuery, signer, gas, funds, memo, keys])
+  
+  const send = useCallback(() => {
+    setLoading(true)
+    if (selectedMessageType === ContractMessageType.Query) {
+      sendQuery()
+    } else {
+      sendExecute()
     }
 
-  }, [instance, activeQuery])
+  }, [selectedMessageType, sendQuery, sendExecute])
   
   const updateActiveQueryParam = useCallback((parameter: QueryParameter, key: string, value: string) => {
     const helper = new ContractHelper()
@@ -179,16 +226,68 @@ const Contract: React.FC<ContractProps> = ({ instance }) => {
   }, [activeQuery, selectedQuery])
   
   const snippet: string = useMemo(() => {
-    if (snippetLanguage === SnippetLanguage.Javascript) {
-      return `const query = (client: CosmWasmClient) => {\n\tclient.queryContractSmart(\n\t\t"${instance.address}",\n\t\t${JSON.stringify(activeQuery)}\n\t).then(state => {\n\t\tconsole.log(state)\n\t})\n}`
+    if (selectedMessageType === ContractMessageType.Query) {
+      if (snippetLanguage === SnippetLanguage.Javascript) {
+        return `const query = (client: CosmWasmClient) => {\n\tclient.queryContractSmart(\n\t\t"${instance.address}",\n\t\t${JSON.stringify(activeQuery)}\n\t).then(state => {\n\t\tconsole.log(state)\n\t})\n}`
+      } else {
+        return `wasmd query wasm contract-state smart \\\n${instance.address} \\\n'${JSON.stringify(activeQuery)}'`
+      }
     } else {
-      return `wasmd query wasm contract-state smart \\\nwasm14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0phg4d \\\n'{"query_entry":{"id":1}}'`
+      if (!signer || !gas) {
+        return ""
+      }
+      const key = keys.filter(key => key.name === signer)[0]
+
+      if (snippetLanguage === SnippetLanguage.Javascript) {
+        return `const query = (client: SigningCosmWasmClient, gas: StdFee, memo?: string, funds?: Coin[]) => {\n\tclient.execute(\n\t\t"${key.address}"\n\t\t"${instance.address}",\n\t\t${JSON.stringify(activeQuery)}\n\t\tgas,\n\t\tmemo,\n\t\tfunds\n\t).then(result => {\n\t\tconsole.log(result)\n\t})\n}`
+      } else {
+        return `wasmd tx wasm execute ${instance.address} \\\n'${JSON.stringify(activeQuery)}' \\\n--from ${signer} \\\n--gas ${gas} \\\n--chain-id your-chain`
+      }
     }
-  }, [snippetLanguage, activeQuery, instance])
+  }, [snippetLanguage, activeQuery, instance, selectedMessageType, signer, gas, funds, memo, keys])
+  
+  const queriesArray = useMemo(() => {
+    if (!contractDetails) {
+      return []
+    }
+    switch (selectedMessageType) {
+      case ContractMessageType.Query:
+        return contractDetails.queries
+        break
+      case ContractMessageType.Execute:
+        return contractDetails.executes
+        break
+      case ContractMessageType.Init:
+        return contractDetails.inits
+        break
+    }
+  }, [contractDetails, selectedMessageType])
+  
+  const selectDefaultQuery = useCallback((messageType: ContractMessageType) => {
+    if (!contractDetails) {
+      return []
+    }
+    let queriesArray
+    switch (messageType) {
+      case ContractMessageType.Query:
+        queriesArray = contractDetails.queries
+        break
+      case ContractMessageType.Execute:
+        queriesArray = contractDetails.executes
+        break
+      case ContractMessageType.Init:
+        queriesArray = contractDetails.inits
+        break
+    }
+
+    if (queriesArray.length) {
+      setSelectedQuery(queriesArray[0])
+    }
+  }, [])
   
   return (
-    <div>
-      <div className="p-8 h-screen">
+    <div className="p-8 h-screen overflow-y-scroll">
+      <div>
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-xl font-semibold text-gray-900">Contract Details</h1>
           {contractDetails &&
@@ -211,7 +310,10 @@ const Contract: React.FC<ContractProps> = ({ instance }) => {
                 <a
                   key={tab.name}
                   href="#"
-                  onClick={() => setSelectedMessageType(tab.type)}
+                  onClick={() => {
+                    setSelectedMessageType(tab.type)
+                    selectDefaultQuery(tab.type)
+                  }}
                   className={classNames(
                     tab.current ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700',
                     index === 0 ? 'rounded-l-lg' : '',
@@ -231,57 +333,106 @@ const Contract: React.FC<ContractProps> = ({ instance }) => {
                 </a>
               ))}
             </nav>
-            {selectedMessageType === ContractMessageType.Query &&
-              <div>
-                <div className="flex space-x-2">
-                  <span>Select a query:</span>
-                  <select className="rounded border border-seafoam-500" defaultValue={selectedQuery?.key} onChange={(e) => setSelectedQuery(contractDetails.queries.find(query => query.key === e.target.value))}>
-                    {contractDetails.queries.map(query => {
-                      return <option key={query.key} value={query.key}>{query.key}</option>
-                    })}
-                  </select>
-                </div>
-                { selectedQuery &&
-                  <React.Fragment>
-                    {selectedQuery.parameters.length > 0 && 
-                      <div className="mt-8">
-                        {/* <h2 className="bold text-xl">Mandatory Parameters:</h2> */}
-                        <div className="grid grid-cols-2 gap-4 bg-seafoam-100 px-4 rounded mb-4">
-                          {selectedQuery.parameters.map(parameter => {
-                            return <QueryParameterField key={parameter.key} parameter={parameter} onChange={(key, value) => updateActiveQueryParam(parameter, key, value)} />
-                          })}
-                        </div>
-                      </div>
-                    }
-                    <div className="flex justify-end">
-                      <button className="rounded bg-seafoam-500 text-white px-4 py-1" onClick={() => sendQuery()}>Query</button>
-                    </div>
-                    {
-                      <div className="mt-8">
-                        <div className="flex justify-between items-baseline">
-                          <h2 className="bold text-xl mb-4">Sample Code:</h2>
-                          <div className="flex space-x-4 items-center">
-                            <button className={classNames(snippetLanguage === SnippetLanguage.Javascript ? "border-seafoam-500" : "border-transparent", "border-b-4 text-sm")} onClick={() => setSnippetLanguage(SnippetLanguage.Javascript)}>TypeScript</button>
-                            <button  className={classNames(snippetLanguage === SnippetLanguage.CommandLine ? "border-seafoam-500" : "border-transparent", "border-b-4 text-sm")} onClick={() => setSnippetLanguage(SnippetLanguage.CommandLine)}>Wasmd</button>
-                          </div>
-                        </div>
-                        <SyntaxHighlighter language={snippetLanguage === SnippetLanguage.Javascript ? "javascript" : "bash"} style={docco} customStyle={{borderRadius: "0.25rem", background: "#D3FDF9"}}>
-                          {snippet}
-                        </SyntaxHighlighter>
-                      </div>
-                    }
-                    {contractState && 
-                      <div className="mt-8">
-                        <h2 className="bold text-xl mb-4">Contract Response:</h2>
-                        <SyntaxHighlighter language="json" style={docco} customStyle={{borderRadius: "0.25rem", background: "#D3FDF9"}}>
-                          {JSON.stringify(contractState, null, 2)}
-                        </SyntaxHighlighter>
-                      </div>
-                    }
-                  </React.Fragment>
-                }
+            <div>
+              <div className="flex space-x-2 items-center">
+                <span>Select a message:</span>
+                <select className="rounded border border-seafoam-500 cursor-pointer" defaultValue={selectedQuery?.key} onChange={(e) => setSelectedQuery(queriesArray.find(query => query.key === e.target.value))}>
+                  {queriesArray.map(query => {
+                    return <option key={query.key} value={query.key}>{query.key}</option>
+                  })}
+                </select>
               </div>
-            }
+              { selectedQuery &&
+                <React.Fragment>
+                  {selectedMessageType === ContractMessageType.Execute &&
+                    <React.Fragment>
+                      <h2 className="bold text-xl mt-8 mb-4">Signing:</h2>
+                      <div className="grid grid-cols-2 gap-4 bg-seafoam-100 px-4 rounded mb-4">
+                        <div className="py-2">
+                          <label className="block flex space-x-2 justify-between items-center" htmlFor="signer">
+                            <span className="font-medium text-lg flex-inline items-start">
+                              <span>Signer</span>
+                              <span className="inline-block text-failure text-sm align-super ml-1">*</span>
+                            </span>
+                          </label>
+                            <select className="w-full p-2 block border border-gray-300 rounded mt-2" id="signer" onChange={(e) => setSigner(e.target.value)}>
+                              {keys.map(key => {
+                                return (
+                                  <option key={key.name} value={key.name}>{key.name}</option>
+                                )
+                              })}
+                            </select>
+                        </div>
+                        <div className="py-2">
+                          <label className="block flex space-x-2 justify-between items-center" htmlFor="gas">
+                            <span className="font-medium text-lg flex-inline items-start">
+                              <span>Gas</span>
+                              <span className="inline-block text-failure text-sm align-super ml-1">*</span>
+                            </span>
+                          </label>
+                            <input className="w-full p-2 block border border-gray-300 rounded mt-2" id="gas" type="text" onChange={(e) => setGas(e.target.value)} />
+                        </div>
+                        <div className="py-2">
+                          <label className="block flex space-x-2 justify-between items-center" htmlFor="funds">
+                            <span className="font-medium text-lg flex-inline items-start">
+                              <span>Funds</span>
+                            </span>
+                          </label>
+                            <input className="w-full p-2 block border border-gray-300 rounded mt-2" id="funds" type="text" onChange={(e) => setFunds(e.target.value)} />
+                        </div>
+                        <div className="py-2">
+                          <label className="block flex space-x-2 justify-between items-center" htmlFor="memo">
+                            <span className="font-medium text-lg flex-inline items-start">
+                              <span>Memo</span>
+                            </span>
+                          </label>
+                            <input className="w-full p-2 block border border-gray-300 rounded mt-2" id="memo" type="text" onChange={(e) => setMemo(e.target.value)} />
+                        </div>
+                      </div>
+                      <h2 className="bold text-xl mt-8 mb-4">Contract Paramaters:</h2>
+                    </React.Fragment>
+                  }
+                  {selectedMessageType !== ContractMessageType.Execute &&
+                    <div className="mt-8" />
+                  }
+                  {selectedQuery.parameters.length > 0 && 
+                    <div>
+                      {/* <h2 className="bold text-xl">Mandatory Parameters:</h2> */}
+                      <div className="grid grid-cols-2 gap-4 bg-seafoam-100 px-4 rounded mb-4">
+                        {selectedQuery.parameters.map(parameter => {
+                          return <QueryParameterField key={parameter.key} parameter={parameter} onChange={(key, value) => updateActiveQueryParam(parameter, key, value)} />
+                        })}
+                      </div>
+                    </div>
+                  }
+                  <div className="flex justify-end">
+                    <button className="rounded bg-seafoam-500 text-white px-4 py-1" onClick={() => send()}>{loading ? "Loading…" : "Send"}</button>
+                  </div>
+                  {
+                    <div className="mt-8">
+                      <div className="flex justify-between items-baseline">
+                        <h2 className="bold text-xl mb-4">Sample Code:</h2>
+                        <div className="flex space-x-4 items-center">
+                          <button className={classNames(snippetLanguage === SnippetLanguage.Javascript ? "border-seafoam-500" : "border-transparent", "border-b-4 text-sm")} onClick={() => setSnippetLanguage(SnippetLanguage.Javascript)}>TypeScript</button>
+                          <button  className={classNames(snippetLanguage === SnippetLanguage.CommandLine ? "border-seafoam-500" : "border-transparent", "border-b-4 text-sm")} onClick={() => setSnippetLanguage(SnippetLanguage.CommandLine)}>Wasmd</button>
+                        </div>
+                      </div>
+                      <SyntaxHighlighter language={snippetLanguage === SnippetLanguage.Javascript ? "javascript" : "bash"} style={docco} customStyle={{borderRadius: "0.25rem", background: "#D3FDF9"}}>
+                        {snippet}
+                      </SyntaxHighlighter>
+                    </div>
+                  }
+                  {contractState && 
+                    <div className="mt-8">
+                      <h2 className="bold text-xl mb-4">Contract Response:</h2>
+                      <SyntaxHighlighter language="json" style={docco} customStyle={{borderRadius: "0.25rem", background: "#D3FDF9"}}>
+                        {JSON.stringify(contractState, null, 2)}
+                      </SyntaxHighlighter>
+                    </div>
+                  }
+                </React.Fragment>
+              }
+            </div>
           </div>
         }
       </div>

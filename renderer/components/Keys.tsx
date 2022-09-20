@@ -55,21 +55,6 @@ const Keys: React.FC = () => {
       setCreatedKey(undefined)  
     }, 250) //delay this til after animation has completed
   }, [])
-  
-  useEffect(() => {
-    Wasm.sharedInstance().signingClient("sam").then(async client => {
-      const cash: Coin[] = [{amount: "100", denom: "stake"}]
-      const fee: StdFee = {
-        amount: cash,
-        gas: "1000000"
-      }
-      await client.sendTokens("wasm1kp8tmrctptd5p70xp8a55dt0xfxx3dwv5ja9ru", "wasm1fczjk0j96gtexdrkjccnawtsyglz20dugmg76e", cash, fee)
-    }).catch(error => {
-      
-      console.log(error)
-    })
-    
-  }, [])
 
   return (
     <div className="p-8 h-full px-4 sm:px-6 md:px-8">

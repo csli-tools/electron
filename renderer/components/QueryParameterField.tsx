@@ -23,7 +23,18 @@ const QueryParameterField: React.FC<QueryParameterFieldProps> = ({ parameter, on
           })}
         </span>
       </label>
-      <input className="w-full p-2 block border border-gray-300 rounded mt-2" id={parameter.key} type="text" onChange={(e) => onChange(parameter.key, e.target.value)} />
+      {!!parameter.allowedValues &&
+        <select className="w-full p-2 block border border-gray-300 rounded mt-2" id={parameter.key} onChange={(e) => onChange(parameter.key, e.target.value)}>
+          {parameter.allowedValues.map(allowedValue => {
+            return (
+              <option key={allowedValue} value={allowedValue}>{allowedValue}</option>
+            )
+          })}
+        </select>
+      }
+      {!parameter.allowedValues &&
+        <input className="w-full p-2 block border border-gray-300 rounded mt-2" id={parameter.key} type="text" onChange={(e) => onChange(parameter.key, e.target.value)} />
+      }
     </div>
   )
 }

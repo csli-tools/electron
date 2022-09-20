@@ -16,6 +16,9 @@ export default class ContractHelper {
       if (schema.title === "QueryMsg") {
         details.queries = this.parseQuerySchema(schema)
       }
+      if (schema.title === "ExecuteMsg") {
+        details.executes = this.parseQuerySchema(schema)
+      }
     })
     appDispatch(contractDetailsActions.upsert(details))
   }
@@ -49,8 +52,8 @@ export default class ContractHelper {
             let mandatoryKeys = typedProperties.required ?? []
             let optionalKeys = Object.keys(typedProperties.properties).filter(key => !mandatoryKeys.includes(key))
     
-            const mandatory: QueryParameter[] = this.parseParametersForKeys(mandatoryKeys, mandatoryKeys, typedProperties)
-            const optional: QueryParameter[] = this.parseParametersForKeys(optionalKeys, mandatoryKeys, typedProperties)
+            const mandatory: QueryParameter[] = this.parseParametersForKeys(mandatoryKeys, mandatoryKeys, typedProperties, schema)
+            const optional: QueryParameter[] = this.parseParametersForKeys(optionalKeys, mandatoryKeys, typedProperties, schema)
             queries.push({
               key: queryName,
               parameters: [...mandatory, ...optional]
@@ -61,13 +64,65 @@ export default class ContractHelper {
     }
     return queries
   }
-  
-  parseParametersForKeys(keys: string[], mandatoryKeys: string[], typedProperties: JSONSchema7): QueryParameter[] {
+
+  parseRefParamater(key: string, required: boolean, typedProperties: JSONSchema7, schema: JSONSchema7, ref: string, nullable: boolean): QueryParameter {
+    const refPath = ref.split("#/")
+    if (refPath.length !== 2) {
+      return null
+    }
+    const refArray = refPath[1].split("/")
+    let referencedNode = schema[refArray.shift()]
+    if (!referencedNode) {
+      return null
+    }
+    while (refArray.length) {
+      referencedNode = referencedNode[refArray.shift()]
+      if (!referencedNode) {
+        return null
+      }
+    }
+    if (!referencedNode.hasOwnProperty("type")) {
+      return null
+    }
+    let typedReferenceNode = referencedNode as JSONSchema7
+    const valueType = typedReferenceNode.type
+    if (Array.isArray(valueType)) {
+      console.error("Unsupported paremter format", typedReferenceNode)
+      return null
+    }
+    return {
+      key,
+      valueType: nullable ? [valueType as any, "null"] : valueType,
+      allowedValues: typedReferenceNode.enum,
+      required,
+      tags: []
+    }
+  }
+
+  parseParametersForKeys(keys: string[], mandatoryKeys: string[], typedProperties: JSONSchema7, schema: JSONSchema7): QueryParameter[] {
     return keys.map((key) => {
       const parameterDetails = typedProperties.properties[key]
-      if (!parameterDetails.hasOwnProperty("type")) {
+      if (!parameterDetails.hasOwnProperty("type") && !parameterDetails.hasOwnProperty("anyOf")) {
         console.error("Unsupported paremter format", parameterDetails)
         return null
+      } else if (parameterDetails.hasOwnProperty("anyOf")) {
+        const typedParameterDetails = parameterDetails as JSONSchema7
+        let ref: string | undefined = undefined
+        var nullable = false
+        typedParameterDetails.anyOf.forEach(value => {
+          if (value.hasOwnProperty("$ref")) {
+            ref = (value as JSONSchema7).$ref
+          }
+          if (value.hasOwnProperty("type")) {
+            nullable = (value as JSONSchema7).type === "null"
+          }
+        })
+        if (ref) {
+          return this.parseRefParamater(key, mandatoryKeys.includes(key), typedProperties, schema, ref, nullable)
+        }
+        console.error("Unsupported paremter format", parameterDetails)
+        return null
+
       }
       const typedParameterDetails = parameterDetails as JSONSchema7
       const valueType = typedParameterDetails.type
