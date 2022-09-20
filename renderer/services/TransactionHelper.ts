@@ -43,15 +43,24 @@ export default class TransactionHelper {
   async checkForNewBlock() {
     try {
       const latestHeight = await this.client.getHeight()
-      const latestBlockDetails = await this.client.getBlock(latestHeight)
+      this.saveBlock(latestHeight)
+      
+    } catch (error) {
+      console.log('failed to check for new block', error)
+    }
+  }
+
+  async saveBlock(height: number) {
+    try {
+      const latestBlockDetails = await this.client.getBlock(height)
 
       const block: Block = {
-        height: latestHeight,
+        height,
         transactionHashes: latestBlockDetails.txs.map(tx => toHex(sha256(tx)))
       }
       getStore().dispatch(blockActions.upsert(block))
     } catch (error) {
-      console.log('failed to check for new block', error)
+      console.log('failed to find block')
     }
   }
 
