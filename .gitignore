@@ -42,3 +42,4 @@ app
 dist
 .env
 
+/key-helper/key-helper
