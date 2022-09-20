@@ -32,7 +32,18 @@ module.exports = {
         900: '#111827'
       }
     },
-    extend: {},
+    extend: {
+      width: {
+        'icon': '24px', /* hero icons large variant */
+        'icon-sm': '20px', /* hero icons small variant */
+      },
+      height: {
+        'icon': '24px', /* hero icons large variant */
+        'icon-sm': '20px', /* hero icons small variant */
+      }
+    },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }

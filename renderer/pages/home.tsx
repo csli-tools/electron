@@ -5,6 +5,7 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import {
   ReceiptPercentIcon,
   CodeBracketIcon,
+  KeyIcon
 } from '@heroicons/react/24/outline'
 
 import TransactionHelper from '../services/TransactionHelper'
@@ -12,17 +13,20 @@ import TransactionHelper from '../services/TransactionHelper'
 import styles from '../styles/Home.module.css'
 import Dashboard from '../components/Dashboard'
 import Contracts from '../components/Contracts'
+import Keys from '../components/Keys'
 import Wasm from '../services/Wasm'
 import Logo from '../components/svg/Logo.svg'
 
 enum Tab {
   Transactions,
-  Contracts
+  Contracts,
+  Keys
 }
 
 const navigation = [
   { tab:Tab.Transactions, name: 'Dashboard', href: '#', icon: ReceiptPercentIcon },
   { tab:Tab.Contracts, name: 'Contracts', href: '#', icon: CodeBracketIcon },
+  { tab:Tab.Keys, name: 'Keys', href: '#', icon: KeyIcon },
 ]
 
 function classNames(...classes: string[]) {
@@ -58,13 +62,13 @@ const Home: NextPage = () => {
         <div className="min-h-screen">
           <div className="flex w-64 flex-col fixed inset-y-0">
             {/* Sidebar component, swap this element with another sidebar if you like */}
-            <div className="flex flex-col flex-grow pt-5 bg-seafoam-500 overflow-y-auto">
-              <div className="flex items-center flex-shrink-0 px-4 text-white space-x-2">
+            <div className="flex flex-col flex-grow pt-8 bg-seafoam-500 overflow-y-auto">
+              <div className="flex items-center flex-shrink-0 px-4 text-white space-x-4">
                 <Logo className="h-8 w-auto" />
                 <span>CSLI</span>
               </div>
-              <div className="mt-5 flex-1 flex flex-col">
-                <nav className="flex-1 px-2 pb-4 space-y-1">
+              <div className="mt-8 flex-1 flex flex-col">
+                <nav className="flex-1 px-4 pb-4 space-y-2">
                   {navigation.map((item) => (
                     <a
                       key={item.name}
@@ -91,6 +95,9 @@ const Home: NextPage = () => {
               {tab === Tab.Contracts &&
                 <Contracts />
               }
+              {tab === Tab.Keys &&
+                <Keys />
+              }
             </main>
           </div>
         </div>
@@ -100,6 +107,7 @@ const Home: NextPage = () => {
           Failed to connect to wasm
         </div>
       }
+      <div id="modal-root" />
     </div>
   )
 }

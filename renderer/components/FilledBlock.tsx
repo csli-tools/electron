@@ -21,7 +21,7 @@ const FilledBlock: React.FC<FilledBlockProps> = ({ block, handleTransactionSelec
 	return (
     <React.Fragment>
       <h2 className="cursor-pointer text-lg font-semibold text-seafoam-500 flex items-center space-x-2" onClick={handleBlockSelection}>
-        {block.height}
+        <span>{block.height}</span>
         {(selectedBlock ? <ChevronDownIcon className="w-4 flex-shrink-0" /> : <ChevronRightIcon className="w-4 flex-shrink-0" />)}
       </h2>
       <div style={{height: selectedBlock ? (block.transactionHashes.length * 2.5) + "rem" : 0 }} className="overflow-hidden transition-all duration-500">
@@ -29,7 +29,7 @@ const FilledBlock: React.FC<FilledBlockProps> = ({ block, handleTransactionSelec
           { 
             block.transactionHashes.map(hash => {
               return (
-                <li key={hash} className={classNames((selectedTransactionHash === hash ? "bg-seafoam-300" : "bg-transparent"), "border-transparent flex items-center w-full justify-between border rounded p-2 cursor-pointer text-gray-900 h-10")} onClick={() => handleTransactionSelection(hash)}>
+                <li key={hash} className={classNames((selectedTransactionHash === hash ? "bg-seafoam-300" : "bg-transparent"), "border-transparent flex items-center w-full justify-between border rounded px-2 py-4 cursor-pointer text-gray-900 h-10")} onClick={() => handleTransactionSelection(hash)}>
                   <div className="truncate">{hash}</div>
                   <ChevronRightIcon className="w-4 flex-shrink-0" />
                 </li>

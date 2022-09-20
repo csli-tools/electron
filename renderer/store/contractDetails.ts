@@ -11,13 +11,14 @@ export interface QueryParameter {
   key: string
   required: boolean
   valueType: JSONSchema7TypeName | JSONSchema7TypeName[]
+  allowedValues?: any[]
   tags: string[]
 }
 
 export interface ContractDetails {
   id: number
   inits: any[] // todo: fill this out
-  executes: any[] // todo: fill this out
+  executes: Query[]
   queries: Query[]
 }
 
